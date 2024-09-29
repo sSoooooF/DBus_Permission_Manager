@@ -24,3 +24,5 @@ private:
 
     sqlite3* database;
 }
+
+#endif // PERMISSION_SERVICE_H
