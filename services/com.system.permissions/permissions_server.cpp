@@ -6,10 +6,12 @@
 
 #include "include/permission-server-glue.h"
 
-class PermissionService : public sdbus::AdaptorInterfaces<com::system::permissions_adaptor>
+class PermissionService
+    : public sdbus::AdaptorInterfaces<com::system::permissions_adaptor>
 {
    public:
-    PermissionService(sdbus::IConnection& connection, sdbus::ObjectPath objectPath)
+    PermissionService(sdbus::IConnection& connection,
+                      sdbus::ObjectPath objectPath)
         : AdaptorInterfaces(connection, std::move(objectPath))
     {
         registerAdaptor();
@@ -30,10 +32,12 @@ class PermissionService : public sdbus::AdaptorInterfaces<com::system::permissio
         savePermission(applicationExecPath, permissionEnumCode);
     }
 
-    bool CheckApplicationHasPermission(const int32_t& permissionEnumCode,
-                                       const std::string& applicationExecPath) override
+    bool CheckApplicationHasPermission(
+        const int32_t& permissionEnumCode,
+        const std::string& applicationExecPath) override
     {
-        return checkPermissionInDatabase(applicationExecPath, permissionEnumCode);
+        return checkPermissionInDatabase(applicationExecPath,
+                                         permissionEnumCode);
     }
 
    private:
@@ -51,8 +55,10 @@ class PermissionService : public sdbus::AdaptorInterfaces<com::system::permissio
     void createTable()
     {
         const char* sql =
-            "CREATE TABLE IF NOT EXISTS Permissions ("
-            "ID INTEGER PRIMARY KEY AUTOINCREMENT, "
+            "CREATE TABLE IF NOT EXISTS "
+            "Permissions ("
+            "ID INTEGER PRIMARY KEY "
+            "AUTOINCREMENT, "
             "ExecPath TEXT NOT NULL, "
             "PermissionCode INTEGER NOT NULL);";
 
@@ -67,12 +73,17 @@ class PermissionService : public sdbus::AdaptorInterfaces<com::system::permissio
 
     void savePermission(const std::string& execPath, int32_t permissionCode)
     {
-        std::string sql = "INSERT INTO Permissions (ExecPath, PermissionCode) VALUES (?, ?);";
+        std::string sql =
+            "INSERT INTO Permissions (ExecPath, "
+            "PermissionCode) VALUES (?, ?);";
         sqlite3_stmt* stmt;
 
-        if (sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK)
+        if (sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr) !=
+            SQLITE_OK)
         {
-            std::cerr << "Ошибка подготовки SQL запроса." << std::endl;
+            std::cerr << "Ошибка подготовки SQL "
+                         "запроса."
+                      << std::endl;
             return;
         }
 
@@ -81,7 +92,9 @@ class PermissionService : public sdbus::AdaptorInterfaces<com::system::permissio
 
         if (sqlite3_step(stmt) != SQLITE_DONE)
         {
-            std::cerr << "Ошибка выполнения SQL запроса." << std::endl;
+            std::cerr << "Ошибка выполнения SQL "
+                         "запроса."
+                      << std::endl;
             sqlite3_finalize(stmt);
             return;
         }
@@ -89,15 +102,21 @@ class PermissionService : public sdbus::AdaptorInterfaces<com::system::permissio
         sqlite3_finalize(stmt);
     }
 
-    bool checkPermissionInDatabase(const std::string& execPath, int32_t permissionCode)
+    bool checkPermissionInDatabase(const std::string& execPath,
+                                   int32_t permissionCode)
     {
         std::string sql =
-            "SELECT COUNT(*) FROM Permissions WHERE ExecPath = ? AND PermissionCode = ?;";
+            "SELECT COUNT(*) FROM Permissions "
+            "WHERE ExecPath = ? AND "
+            "PermissionCode = ?;";
         sqlite3_stmt* stmt;
 
-        if (sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK)
+        if (sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr) !=
+            SQLITE_OK)
         {
-            std::cerr << "Ошибка подготовки SQL запроса." << std::endl;
+            std::cerr << "Ошибка подготовки SQL "
+                         "запроса."
+                      << std::endl;
             return false;
         }
 

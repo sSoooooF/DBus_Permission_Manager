@@ -11,7 +11,10 @@ std::string formatTime(uint32_t timeInSeconds)
     std::tm* localTime = std::localtime(&currTime);
 
     std::ostringstream oss;
-    oss << std::put_time(localTime, "%Y-%m-%d %H:%M:%S");  // Формат: ГГГГ-ММ-ДД ЧЧ:ММ:СС
+    oss << std::put_time(localTime,
+                         "%Y-%m-%d %H:%M:%S");  // Формат:
+                                                // ГГГГ-ММ-ДД
+                                                // ЧЧ:ММ:СС
     return oss.str();
 }
 
