@@ -7,22 +7,22 @@
 #define __sdbuscpp__time_server_glue_h__adaptor__H__
 
 #include <sdbus-c++/sdbus-c++.h>
+
 #include <string>
 #include <tuple>
 
-namespace com {
-namespace system {
+namespace com
+{
+namespace system
+{
 
 class time_adaptor
 {
-public:
+   public:
     static constexpr const char* INTERFACE_NAME = "com.system.time";
 
-protected:
-    time_adaptor(sdbus::IObject& object)
-        : m_object(object)
-    {
-    }
+   protected:
+    time_adaptor(sdbus::IObject& object) : m_object(object) {}
 
     time_adaptor(const time_adaptor&) = delete;
     time_adaptor& operator=(const time_adaptor&) = delete;
@@ -33,16 +33,21 @@ protected:
 
     void registerAdaptor()
     {
-        m_object.addVTable(sdbus::registerMethod("GetSystemTime").withOutputParamNames("timestamp").implementedAs([this](){ return this->GetSystemTime(); })).forInterface(INTERFACE_NAME);
+        m_object
+            .addVTable(sdbus::registerMethod("GetSystemTime")
+                           .withOutputParamNames("timestamp")
+                           .implementedAs([this]() { return this->GetSystemTime(); }))
+            .forInterface(INTERFACE_NAME);
     }
 
-private:
+   private:
     virtual uint32_t GetSystemTime() = 0;
 
-private:
+   private:
     sdbus::IObject& m_object;
 };
 
-}} // namespaces
+}  // namespace system
+}  // namespace com
 
 #endif

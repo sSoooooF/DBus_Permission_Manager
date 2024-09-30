@@ -7,22 +7,22 @@
 #define __sdbuscpp__permission_proxy_glue_h__proxy__H__
 
 #include <sdbus-c++/sdbus-c++.h>
+
 #include <string>
 #include <tuple>
 
-namespace com {
-namespace system {
+namespace com
+{
+namespace system
+{
 
 class permissions_proxy
 {
-public:
+   public:
     static constexpr const char* INTERFACE_NAME = "com.system.permissions";
 
-protected:
-    permissions_proxy(sdbus::IProxy& proxy)
-        : m_proxy(proxy)
-    {
-    }
+   protected:
+    permissions_proxy(sdbus::IProxy& proxy) : m_proxy(proxy) {}
 
     permissions_proxy(const permissions_proxy&) = delete;
     permissions_proxy& operator=(const permissions_proxy&) = delete;
@@ -31,27 +31,33 @@ protected:
 
     ~permissions_proxy() = default;
 
-    void registerProxy()
+    void registerProxy() {}
+
+   public:
+    void RequestPermission(const int32_t& permissionEnumCode,
+                           const std::string& applicationExecPath)
     {
+        m_proxy.callMethod("RequestPermission")
+            .onInterface(INTERFACE_NAME)
+            .withArguments(permissionEnumCode, applicationExecPath);
     }
 
-public:
-    void RequestPermission(const int32_t& permissionEnumCode, const std::string& applicationExecPath)
-    {
-        m_proxy.callMethod("RequestPermission").onInterface(INTERFACE_NAME).withArguments(permissionEnumCode, applicationExecPath);
-    }
-
-    bool CheckApplicationHasPermission(const int32_t& permissionEnumCode, const std::string& applicationExecPath)
+    bool CheckApplicationHasPermission(const int32_t& permissionEnumCode,
+                                       const std::string& applicationExecPath)
     {
         bool result;
-        m_proxy.callMethod("CheckApplicationHasPermission").onInterface(INTERFACE_NAME).withArguments(permissionEnumCode, applicationExecPath).storeResultsTo(result);
+        m_proxy.callMethod("CheckApplicationHasPermission")
+            .onInterface(INTERFACE_NAME)
+            .withArguments(permissionEnumCode, applicationExecPath)
+            .storeResultsTo(result);
         return result;
     }
 
-private:
+   private:
     sdbus::IProxy& m_proxy;
 };
 
-}} // namespaces
+}  // namespace system
+}  // namespace com
 
 #endif

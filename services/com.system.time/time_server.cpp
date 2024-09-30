@@ -19,6 +19,7 @@ public:
 protected:
     uint32_t GetSystemTime() override
     {
+        
         std::string clientExecPath = getClientExecPath();
         if (!checkClientPermission(clientExecPath)) {
             permissionProxy_->callMethod("RequestPermission").onInterface("com.system.permissions").withArguments(0, clientExecPath);
@@ -32,7 +33,7 @@ private:
     sdbus::IConnection& connection_;
 
     std::string getClientExecPath() {
-        std::string clientBusName = connection_.getUniqueName();
+        std::string clientBusName = getObject().getCurrentlyProcessedMessage().getSender();
         
         sdbus::ServiceName dest{"org.freedesktop.DBus"};
         sdbus::ObjectPath objectPath{"/org/freedesktop/DBus"};
@@ -65,7 +66,7 @@ private:
             bool hasPermission;
             permissionProxy_->callMethod("CheckApplicationHasPermission")
                              .onInterface("com.system.permissions")
-                             .withArguments(0, getClientExecPath())
+                             .withArguments(0, clientName)
                              .storeResultsTo(hasPermission);
             return hasPermission;
         } catch (const sdbus::Error& e) {
