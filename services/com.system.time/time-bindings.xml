@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<node name="/com/system/time">
+    <interface name="com.system.time">
+        <method name="GetSystemTime">
+            <arg type="u" name="timestamp" direction="out" />
+        </method>
+    </interface>
+</node>
