@@ -20,18 +20,27 @@ public:
 
 protected:
     time_adaptor(sdbus::IObject& object)
-        : object_(object)
+        : m_object(object)
     {
-        object_.registerMethod("GetSystemTime").onInterface(INTERFACE_NAME).withOutputParamNames("timestamp").implementedAs([this](){ return this->GetSystemTime(); });
     }
 
+    time_adaptor(const time_adaptor&) = delete;
+    time_adaptor& operator=(const time_adaptor&) = delete;
+    time_adaptor(time_adaptor&&) = delete;
+    time_adaptor& operator=(time_adaptor&&) = delete;
+
     ~time_adaptor() = default;
+
+    void registerAdaptor()
+    {
+        m_object.addVTable(sdbus::registerMethod("GetSystemTime").withOutputParamNames("timestamp").implementedAs([this](){ return this->GetSystemTime(); })).forInterface(INTERFACE_NAME);
+    }
 
 private:
     virtual uint32_t GetSystemTime() = 0;
 
 private:
-    sdbus::IObject& object_;
+    sdbus::IObject& m_object;
 };
 
 }} // namespaces

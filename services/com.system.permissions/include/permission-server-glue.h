@@ -33,13 +33,13 @@ protected:
 
     void registerAdaptor()
     {
-        m_object.addVTable( sdbus::registerMethod("RequestPermission").withInputParamNames("permissionEnumCode").implementedAs([this](const int32_t& permissionEnumCode){ return this->RequestPermission(permissionEnumCode); })
+        m_object.addVTable( sdbus::registerMethod("RequestPermission").withInputParamNames("permissionEnumCode", "applicationExecPath").implementedAs([this](const int32_t& permissionEnumCode, const std::string& applicationExecPath){ return this->RequestPermission(permissionEnumCode, applicationExecPath); })
                           , sdbus::registerMethod("CheckApplicationHasPermission").withInputParamNames("permissionEnumCode", "applicationExecPath").withOutputParamNames("hasPermission").implementedAs([this](const int32_t& permissionEnumCode, const std::string& applicationExecPath){ return this->CheckApplicationHasPermission(permissionEnumCode, applicationExecPath); })
                           ).forInterface(INTERFACE_NAME);
     }
 
 private:
-    virtual void RequestPermission(const int32_t& permissionEnumCode) = 0;
+    virtual void RequestPermission(const int32_t& permissionEnumCode, const std::string& applicationExecPath) = 0;
     virtual bool CheckApplicationHasPermission(const int32_t& permissionEnumCode, const std::string& applicationExecPath) = 0;
 
 private:

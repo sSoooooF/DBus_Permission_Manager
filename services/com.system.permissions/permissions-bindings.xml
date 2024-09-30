@@ -3,6 +3,7 @@
     <interface name="com.system.permissions">
         <method name="RequestPermission">
             <arg type="i" name="permissionEnumCode" direction="in" />
+            <arg type="s" name="applicationExecPath" direction="in"/>
         </method>
         <method name="CheckApplicationHasPermission">
             <arg type="i" name="permissionEnumCode" direction="in" />

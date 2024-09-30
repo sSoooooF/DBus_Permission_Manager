@@ -19,13 +19,13 @@ public:
     ~PermissionService() 
     {
         sqlite3_close(db);
+        unregisterAdaptor();
     }
 
 protected:
-    void RequestPermission(const int32_t& permissionEnumCode) override
+    void RequestPermission(const int32_t& permissionEnumCode, const std::string& applicationExecPath) override
     {
-        std::string execPath = getClientExecPath();
-        savePermission(execPath, permissionEnumCode);
+        savePermission(applicationExecPath, permissionEnumCode);
     }
 
     bool CheckApplicationHasPermission(const int32_t& permissionEnumCode, const std::string& applicationExecPath) override
@@ -107,12 +107,6 @@ private:
 
         sqlite3_finalize(stmt);
         return hasPermission;
-    }
-
-    std::string getClientExecPath() 
-    {
-        auto connection = sdbus::createSessionBusConnection();
-        return connection->getUniqueName();
     }
 };
 
