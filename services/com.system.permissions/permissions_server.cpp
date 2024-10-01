@@ -6,6 +6,15 @@
 
 #include "include/permission-server-glue.h"
 
+
+/*
+ * PermissionService должен хранить разрешения приложений в базе данных SQLite.
+ * Он должен обрабатывать запросы клиента с помощью RequestPermission и CheckApplicationHasPermission.
+ * В базе данных будет таблица с полями:
+ * - id (integer, primary key)
+ * - applicationExecPath (text)
+ * - permissionEnumCode (integer)
+*/
 class PermissionService
     : public sdbus::AdaptorInterfaces<com::system::permissions_adaptor>
 {
@@ -26,12 +35,14 @@ class PermissionService
     }
 
    protected:
+    // Запрос разрешения
     void RequestPermission(const int32_t& permissionEnumCode,
                            const std::string& applicationExecPath) override
     {
         savePermission(applicationExecPath, permissionEnumCode);
     }
 
+    // Проверка наличия разрешения
     bool CheckApplicationHasPermission(
         const int32_t& permissionEnumCode,
         const std::string& applicationExecPath) override
@@ -43,6 +54,7 @@ class PermissionService
    private:
     sqlite3* db;
 
+    // Открытие базы данных
     void openDatabase()
     {
         if (sqlite3_open("permissions.db", &db))
@@ -52,6 +64,7 @@ class PermissionService
         }
     }
 
+    // Создание таблицы SQLite
     void createTable()
     {
         const char* sql =
@@ -71,6 +84,7 @@ class PermissionService
         }
     }
 
+    // Сохранение разрешения в базе данных
     void savePermission(const std::string& execPath, int32_t permissionCode)
     {
         std::string sql =
@@ -102,6 +116,7 @@ class PermissionService
         sqlite3_finalize(stmt);
     }
 
+    // Проверка наличия разрешения в базе данных
     bool checkPermissionInDatabase(const std::string& execPath,
                                    int32_t permissionCode)
     {

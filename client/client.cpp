@@ -20,14 +20,17 @@ std::string formatTime(uint32_t timeInSeconds)
 
 int main()
 {
+    // Создание соединения
     auto connection = sdbus::createSessionBusConnection();
 
+    // Создание прокси для TimeService
     sdbus::ServiceName serviceName{"com.system.time"};
     sdbus::ObjectPath objectPath{"/com/system/time"};
-
     auto timeProxy = sdbus::createProxy(*connection, serviceName, objectPath);
+
     uint32_t systemTimeInSeconds;
 
+    // Получение системного времени и форматирование его
     try
     {
         timeProxy->callMethod("GetSystemTime")

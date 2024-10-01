@@ -5,6 +5,13 @@
 #include "../com.system.permissions/include/permission-proxy-glue.h"
 #include "include/time-server-glue.h"
 
+
+/*
+ * Клиентское приложение должно вызывать этот прокси для получения текущего системного времени.
+ * Если клиент не имеет разрешения, оно должно вызвать метод RequestPermission, передавая ему путь к клиентскому приложению.
+ * Приложение TimeService должно проверять разрешения клиента перед получением текущего системного времени.
+ * Если разрешения отсутствуют, приложение должно выбросить исключение с сообщением об ошибке.
+*/
 class TimeService : public sdbus::AdaptorInterfaces<com::system::time_adaptor>
 {
    public:
@@ -21,12 +28,14 @@ class TimeService : public sdbus::AdaptorInterfaces<com::system::time_adaptor>
     ~TimeService() { unregisterAdaptor(); }
 
    protected:
+   // Метод для получения системного времени
     uint32_t GetSystemTime() override
     {
         std::string clientExecPath = getClientExecPath();
         if (!checkClientPermission(clientExecPath))
         {
-            permissionProxy_->callMethod("RequestPermission")
+            // Вызов метода сервиса permissions
+            permissionProxy_->callMethod("RequestPermission") 
                 .onInterface("com.system.permissions")
                 .withArguments(0, clientExecPath);
             throw std::runtime_error(
@@ -40,6 +49,7 @@ class TimeService : public sdbus::AdaptorInterfaces<com::system::time_adaptor>
     std::unique_ptr<sdbus::IProxy> permissionProxy_;
     sdbus::IConnection& connection_;
 
+    // Метод для получения пути до исполняемого файла клиента
     std::string getClientExecPath()
     {
         std::string clientBusName =
@@ -75,6 +85,7 @@ class TimeService : public sdbus::AdaptorInterfaces<com::system::time_adaptor>
         return result;
     }
 
+    // Метод для проверки разрешений клиента
     bool checkClientPermission(const std::string& clientName)
     {
         try
